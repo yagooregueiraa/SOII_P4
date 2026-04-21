@@ -20,10 +20,10 @@ int vocales_prod[5] = {0, 0, 0, 0, 0};
 
 char produce_item(FILE *archivo)
 {
-    char c = fgetc(archivo);
+    int c = fgetc(archivo);
 
     if (c == EOF)
-        return EOF;
+        return '\0';
     /* comprobacion de que sea vocal */
     switch (c) {
         case 'a': case 'A': vocales_prod[0]++; break;
@@ -32,7 +32,7 @@ char produce_item(FILE *archivo)
         case 'o': case 'O': vocales_prod[3]++; break;
         case 'u': case 'U': vocales_prod[4]++; break;
     }
-    return c;
+    return (char)c;
 }
 
 void productor(FILE* fp,int T){
@@ -41,7 +41,6 @@ void productor(FILE* fp,int T){
     char msg_vacio;
 
     while(1){
-        item = produce_item(fp);
 
         /*Recibimos el mensaje vacio del consumidor*
         * Esto se bloquea si el buffer esta lleno */
@@ -50,14 +49,22 @@ void productor(FILE* fp,int T){
             break;
         }
 
+        item = produce_item(fp);
+        /*Espera un valor aleatorio entre 0 y T*/
+        usleep(rand()%T);
+
+        /* Si llegamos al final del fichero, enviamos marca de fin y salimos */
+        if (item == '\0') {
+            mq_send(almacen1, &item, sizeof(char), 0);
+            printf("[Productor] Fin de fichero, señal enviada.\n");
+            break;
+        }
+
         /*Enviamos el item al consumidor por almacen1*/
         if (mq_send(almacen1, &item, sizeof(char), 0) == -1) {
             printf("[ERROR] mq_send (item)");
             break;
         }
-
-        /*Espera un valor aleatorio entre 0 y T*/
-        usleep(rand()%T);
     }
 }
 
