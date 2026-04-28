@@ -59,6 +59,7 @@ void productor(FILE* fp,int T){
             printf("[Productor] Fin de fichero, señal enviada.\n");
             break;
         }
+        printf("[Productor] Enviado: '%c'\n", item);
 
         /*Enviamos el item al consumidor por almacen1*/
         if (mq_send(almacen1, &item, sizeof(char), 0) == -1) {
@@ -118,6 +119,6 @@ int main (int argc, char **argv){
     mq_close(almacen1);
     mq_close(almacen2);
 
-    printf("[Productor] Programa acabado");
+    printf("[Productor] Programa acabado.\n");
     return 0;
 }

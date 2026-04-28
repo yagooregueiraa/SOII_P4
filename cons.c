@@ -54,6 +54,7 @@ void consumidor(FILE *archivo, int T){
         }
 
         consume_item(item, archivo);
+        printf("[Consumidor] Recibido: '%c'\n", item);
 
         usleep(rand() % (T + 1));
 
@@ -88,9 +89,9 @@ int main (int argc, char **argv){
     attr.mq_msgsize = sizeof(char); /* tamaño de cada mensaje (1 byte) */
 
 
-    /* Apertura de los buffers (colas de mensajes). */
-    almacen1 = mq_open("/ALMACEN1", O_CREAT | O_RDONLY, 0777, &attr);
-    almacen2 = mq_open("/ALMACEN2", O_CREAT | O_WRONLY, 0777, &attr);
+    // Apertura de los buffers ya creados en el productor
+    almacen1 = mq_open("/ALMACEN1", O_RDONLY);
+    almacen2 = mq_open("/ALMACEN2", O_WRONLY);
 
     if ((almacen1 == -1) || (almacen2 == -1)) {
         perror("mq_open");
@@ -111,6 +112,6 @@ int main (int argc, char **argv){
     mq_unlink("/ALMACEN1");
     mq_unlink("/ALMACEN2");
 
-    printf("[Consumidor] Programa acabado");
+    printf("[Consumidor] Programa acabado.\n");
     return 0;
 }
