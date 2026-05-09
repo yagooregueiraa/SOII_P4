@@ -51,7 +51,7 @@ void productor(FILE* fp,int T){
 
         item = produce_item(fp);
         /*Espera un valor aleatorio entre 0 y T*/
-        usleep(rand()%T);
+        usleep(rand() % (T + 1));
 
         /* Si llegamos al final del fichero, enviamos marca de fin y salimos */
         if (item == '\0') {
